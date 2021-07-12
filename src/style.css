@@ -1,0 +1,76 @@
+#cttv-root {
+    display: flex;
+    flex-direction: row;
+    padding-top: 1rem;
+    justify-content: start;
+}
+
+#cttv-root * {
+    user-select: none;
+}
+
+#cttv-menu-controller {
+    display: flex;
+    flex-direction: row;
+    margin-left: auto;
+}
+
+.cttv-menu {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    padding-left: 0.5rem;
+    height: 6rem;
+    overflow-y: scroll;
+}
+
+.cttv-menu::-webkit-scrollbar {
+    display: none;
+}
+
+.cttv-menu[visible="false"] {
+    display: none;
+}
+
+.cttv-btn {
+    width: 3rem;
+    height: 3rem;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    padding: 0.1rem;
+    border-radius: var(--border-radius-medium);
+}
+
+.cttv-btn:hover {
+    background-color: var(--color-background-button-text-hover);
+    cursor: pointer;
+}
+
+.cttv-btn img,
+.cttv-btn svg {
+    width: 2rem;
+    height: 2rem;
+    object-fit: contain;
+    animation-play-state: paused !important;
+}
+
+.cttv-btn.cttv-btn-x2 {
+    width: 6rem;
+}
+
+.cttv-btn.cttv-btn-x2 img,
+.cttv-btn.cttv-btn-x2 svg {
+    width: 4rem;
+}
+
+
+.cttv-btn.cttv-btn-x3 {
+    width: 12rem;
+}
+
+.cttv-btn.cttv-btn-x3 img,
+.cttv-btn.cttv-btn-x3 svg {
+    width: 8rem;
+}

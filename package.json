@@ -1,0 +1,17 @@
+{
+  "name": "cttv",
+  "version": "1.0.0",
+  "main": "index.js",
+  "license": "MIT",
+  "scripts": {
+    "start": "node index.js",
+    "build": "node build.js"
+  },
+  "dependencies": {
+    "terser": "^5.7.1",
+    "ws": "^7.5.2"
+  },
+  "devDependencies": {
+    "prettier": "^2.3.2"
+  }
+}
