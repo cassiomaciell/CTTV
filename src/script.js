@@ -248,6 +248,7 @@ function init() {
     menuMiscChildNodes.push(buildSimpleChatMsgButton("tfpinching", 2, icons.tfpinching.imgs, ":tf: 🤏 "));
     menuMiscChildNodes.push(buildSimpleChatMsgButton("pistolayaya", 2, icons.pistolayaya.imgs, "🔫 AYAYA "));
     menuMiscChildNodes.push(buildSimpleChatMsgButton("nampistolayaya", 2, icons.nampistolayaya.imgs, "NaM 🔫 AYAYA "));
+    menuMiscChildNodes.push(buildSimpleChatMsgButton("monkawnymncorn", 2, icons.monkawnymncorn.imgs, "monkaW nymnCorn "));
 
     /**
      * Add CTTV Root

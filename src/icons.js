@@ -3,6 +3,7 @@ const emotes = {
     clap: "https://cdn.betterttv.net/emote/55b6f480e66682f576dd94f5/3x",
     ayaya: "https://cdn.frankerfacez.com/emoticon/162146/4",
     tf: "https://cdn.betterttv.net/emote/54fa8f1401e468494b85b537/3x",
+    nymnCorn: "https://cdn.betterttv.net/emote/56cb56f5500cb4cf51e25b90/3x",
 };
 
 const icons = {
@@ -22,7 +23,7 @@ const icons = {
         img: "https://i.imgur.com/g0jL1jy.png",
     },
     pepegachat: {
-        img: "https://cdn.betterttv.net/emote/5f2e77591ab9be446c4e8d9b/3x"
+        img: "https://cdn.betterttv.net/emote/5f2e77591ab9be446c4e8d9b/3x",
     },
     upbtn: {
         pathlist: [
@@ -86,5 +87,8 @@ const icons = {
     },
     nampistolayaya: {
         imgs: ["https://cdn.betterttv.net/emote/566ca06065dbbdab32ec054e/3x", "https://cdn.frankerfacez.com/static/emoji/images/twemoji/1f52b.png", emotes.ayaya],
+    },
+    monkawnymncorn: {
+        imgs: ["https://cdn.frankerfacez.com/emote/214681/4", emotes.nymnCorn],
     },
 };
