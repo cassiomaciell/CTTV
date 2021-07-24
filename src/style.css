@@ -49,7 +49,8 @@
 }
 
 .cttv-btn img,
-.cttv-btn svg {
+.cttv-btn svg,
+.cttv-btn .cttv-icon-text {
     width: 2rem;
     height: 2rem;
     object-fit: contain;
@@ -61,16 +62,29 @@
 }
 
 .cttv-btn.cttv-btn-x2 img,
+.cttv-btn.cttv-btn-x2 .cttv-icon-text,
 .cttv-btn.cttv-btn-x2 svg {
     width: 4rem;
 }
 
-
 .cttv-btn.cttv-btn-x3 {
-    width: 12rem;
+    width: 8rem;
 }
 
 .cttv-btn.cttv-btn-x3 img,
 .cttv-btn.cttv-btn-x3 svg {
     width: 8rem;
+}
+
+.cttv-icon-text {
+    white-space: nowrap;
+    overflow: hidden;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+}
+
+.cttv-icon-text-4 {
+    font-size: 90%;
 }

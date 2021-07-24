@@ -67,8 +67,7 @@ function buildSimpleChatMsgButton(name, slots, icon, text) {
             if (chatSendButton) chatSendButton.click();
         }
     };
-
-    return buildButton(name, slots, icon, [], btnOnClick);
+    return buildButton(name, slots, icon, btnOnClick);
 }
 
 /**
@@ -90,49 +89,51 @@ function buildMenu(id, childNodes, visible = false) {
     return cttvMenu;
 }
 
-/**
- *
- * @param {Array<any>} pathList
- * @param {Function} onClick
- */
-function buildButton(name, slots, imgOrImgs, pathList, onClick) {
+function buildButton(name, slots, icon, onClick) {
     const btn = document.createElement("div");
 
     btn.id = "cttv-btn-" + name;
-    btn.classList.remove(btn.classList[1]);
     btn.classList.add("cttv-btn");
-    if (slots) btn.classList.add("cttv-btn-x" + slots);
-    /**
-     * @type {SVGAElement}
-     */
-    if (!imgOrImgs) {
-        const btnIconSvg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
 
-        btnIconSvg.setAttribute("viewBox", "0 0 24 24");
-        btnIconSvg.setAttribute("x", "0px");
-        btnIconSvg.setAttribute("y", "0px");
-        btnIconSvg.setAttribute("viewBox", "0 0 24 24");
-
-        for (const path of pathList) {
-            const btnPath = document.createElementNS("http://www.w3.org/2000/svg", "path");
-            if (path.fill) btnPath.setAttribute("fill", path.fill);
-            if (path.d) btnPath.setAttribute("d", path.d);
-            btnIconSvg.appendChild(btnPath);
-        }
-        btn.appendChild(btnIconSvg);
-    } else if (slots == 1) {
-        const imgElem = document.createElement("img");
-        imgElem.src = imgOrImgs;
-        btn.appendChild(imgElem);
-    } else if (slots > 1) {
-        for (const img of imgOrImgs) {
+    for (const render of icon.renders) {
+        if (render.type == "img") {
             const imgElem = document.createElement("img");
-            imgElem.src = img;
+            imgElem.src = render.img;
             btn.appendChild(imgElem);
+        } else if (render.type == "imgs") {
+            for (const img of render.imgs) {
+                const imgElem = document.createElement("img");
+                imgElem.src = img;
+                btn.appendChild(imgElem);
+            }
+        } else if (render.type == "pathlist") {
+            const btnIconSvg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+
+            btnIconSvg.setAttribute("viewBox", "0 0 24 24");
+            btnIconSvg.setAttribute("x", "0px");
+            btnIconSvg.setAttribute("y", "0px");
+            btnIconSvg.setAttribute("viewBox", "0 0 24 24");
+
+            for (const path of render.pathlist) {
+                const btnPath = document.createElementNS("http://www.w3.org/2000/svg", "path");
+                if (path.fill) btnPath.setAttribute("fill", path.fill);
+                if (path.d) btnPath.setAttribute("d", path.d);
+                btnIconSvg.appendChild(btnPath);
+            }
+            btn.appendChild(btnIconSvg);
+        } else if (render.type == "text") {
+            const text = document.createElement("div");
+            text.classList.add("cttv-icon-text");
+            text.classList.add("cttv-icon-text-" + render.text.length);
+            text.innerText = render.text;
+            btn.appendChild(text);
         }
     }
 
+    if (slots) btn.classList.add("cttv-btn-x" + slots);
+
     btn.addEventListener("click", onClick);
+
     return btn;
 }
 
@@ -160,7 +161,7 @@ function init() {
         getChat().focus();
     };
 
-    menu1ChildNodes.push(buildButton("blank", 1, null, icons.blank.pathlist, blankOnClick));
+    menu1ChildNodes.push(buildButton("blank", 1, icons.blank, blankOnClick));
 
     /**
      * I ENJOYED MY STAY xqcL BTN
@@ -180,7 +181,7 @@ function init() {
             setChatMessage(text);
             getChat().focus();
         };
-        menu1ChildNodes.push(buildButton("xqcl", 1, icons.xqcl.img, [], xqcLOnClick));
+        menu1ChildNodes.push(buildButton("xqcl", 1, icons.xqcl, xqcLOnClick));
     })();
 
     /**
@@ -209,7 +210,7 @@ function init() {
             setChatMessage(msg);
             blankCharInLast = !blankCharInLast;
         };
-        menu1ChildNodes.push(buildButton("pepegachat", 1, icons.pepegachat.img, [], pepegachatOnClick));
+        menu1ChildNodes.push(buildButton("pepegachat", 1, icons.pepegachat, pepegachatOnClick));
     })();
 
     /**
@@ -222,21 +223,22 @@ function init() {
 
     let menuTeaTimeChildNodes = [];
 
-    menuTeaTimeChildNodes.push(buildSimpleChatMsgButton("tfteatime", 2, icons.tfteatime.imgs, ":tf: TeaTime "));
-    menuTeaTimeChildNodes.push(buildSimpleChatMsgButton("pepelaughteatime", 2, icons.pepelaughteatime.imgs, "PepeLaugh TeaTime "));
+    menuTeaTimeChildNodes.push(buildSimpleChatMsgButton("tfteatime", 2, icons.tfteatime, ":tf: TeaTime "));
+    menuTeaTimeChildNodes.push(buildSimpleChatMsgButton("pepelaughteatime", 2, icons.pepelaughteatime, "PepeLaugh TeaTime "));
 
     /**
      * Clap
      */
 
     let menuClapChildNodes = [];
-    menuClapChildNodes.push(buildSimpleChatMsgButton("ayayaclap", 2, icons.ayayaclap.imgs, "AYAYA Clap "));
-    menuClapChildNodes.push(buildSimpleChatMsgButton("tfclap", 2, icons.tfclap.imgs, ":tf: Clap "));
-    menuClapChildNodes.push(buildSimpleChatMsgButton("wickedclap", 2, icons.wickedclap.imgs, "WICKED Clap "));
-    menuClapChildNodes.push(buildSimpleChatMsgButton("ezclap", 2, icons.ezclap.imgs, "EZ Clap "));
-    menuClapChildNodes.push(buildSimpleChatMsgButton("feelsstrongmanclap", 2, icons.feelsstrongmanclap.imgs, "FeelsStrongMan Clap "));
-    menuClapChildNodes.push(buildSimpleChatMsgButton("omegalulclap", 2, icons.omegalulclap.imgs, "OMEGALUL Clap "));
-    menuClapChildNodes.push(buildSimpleChatMsgButton("feelsgoodmanclap", 2, icons.feelsgoodmanclap.imgs, "FeelsGoodMan Clap "));
+    menuClapChildNodes.push(buildSimpleChatMsgButton("ayayaclap", 2, icons.ayayaclap, "AYAYA Clap "));
+    menuClapChildNodes.push(buildSimpleChatMsgButton("tfclap", 2, icons.tfclap, ":tf: Clap "));
+    menuClapChildNodes.push(buildSimpleChatMsgButton("wickedclap", 2, icons.wickedclap, "WICKED Clap "));
+    menuClapChildNodes.push(buildSimpleChatMsgButton("ezclap", 2, icons.ezclap, "EZ Clap "));
+    menuClapChildNodes.push(buildSimpleChatMsgButton("feelsstrongmanclap", 2, icons.feelsstrongmanclap, "FeelsStrongMan Clap "));
+    menuClapChildNodes.push(buildSimpleChatMsgButton("omegalulclap", 2, icons.omegalulclap, "OMEGALUL Clap "));
+    menuClapChildNodes.push(buildSimpleChatMsgButton("feelsgoodmanclap", 2, icons.feelsgoodmanclap, "FeelsGoodMan Clap "));
+    menuClapChildNodes.push(buildSimpleChatMsgButton("forsencdclap", 2, icons.forsencdclap, "forsenCD Clap "));
 
     /**
      * Misc
@@ -244,11 +246,13 @@ function init() {
 
     let menuMiscChildNodes = [];
 
-    menuMiscChildNodes.push(buildSimpleChatMsgButton("xqctechnoppoverheat ", 2, icons.xqctechnoppoverheat.imgs, "xqcTechno ppOverheat "));
-    menuMiscChildNodes.push(buildSimpleChatMsgButton("tfpinching", 2, icons.tfpinching.imgs, ":tf: 🤏 "));
-    menuMiscChildNodes.push(buildSimpleChatMsgButton("pistolayaya", 2, icons.pistolayaya.imgs, "🔫 AYAYA "));
-    menuMiscChildNodes.push(buildSimpleChatMsgButton("nampistolayaya", 2, icons.nampistolayaya.imgs, "NaM 🔫 AYAYA "));
-    menuMiscChildNodes.push(buildSimpleChatMsgButton("monkawnymncorn", 2, icons.monkawnymncorn.imgs, "monkaW nymnCorn "));
+    menuMiscChildNodes.push(buildSimpleChatMsgButton("xqctechnoppoverheat ", 2, icons.xqctechnoppoverheat, "xqcTechno ppOverheat "));
+    menuMiscChildNodes.push(buildSimpleChatMsgButton("tfpinching", 2, icons.tfpinching, ":tf: 🤏 "));
+    menuMiscChildNodes.push(buildSimpleChatMsgButton("pistolayaya", 2, icons.pistolayaya, "🔫 AYAYA "));
+    menuMiscChildNodes.push(buildSimpleChatMsgButton("monkawnymncorn", 2, icons.monkawnymncorn, "monkaW nymnCorn "));
+    menuMiscChildNodes.push(buildSimpleChatMsgButton("forsencdnice", 2, icons.forsencdnice, "forsenCD nice "));
+    menuMiscChildNodes.push(buildSimpleChatMsgButton("forsencdvictory", 2, icons.forsencdvictory, "forsenCD ✌️ "));
+    menuMiscChildNodes.push(buildSimpleChatMsgButton("nampistolayaya", 3, icons.nampistolayaya, "NaM 🔫 AYAYA "));
 
     /**
      * Add CTTV Root
@@ -307,7 +311,7 @@ function init() {
         changeMenu(newMenu);
     };
 
-    const btnUp = buildButton("down", 1, null, icons.upbtn.pathlist, upBtnOnClick);
+    const btnUp = buildButton("up", 1, icons.upbtn, upBtnOnClick);
     menuController.appendChild(btnUp);
 
     /**
@@ -319,7 +323,7 @@ function init() {
         changeMenu(newMenu);
     };
 
-    const downBtn = buildButton("down", 1, null, icons.downbtn.pathlist, downBtnOnClick);
+    const downBtn = buildButton("down", 1, icons.downbtn, downBtnOnClick);
     menuController.appendChild(downBtn);
 
     cttvRoot.appendChild(menuController);
@@ -331,7 +335,7 @@ function init() {
      */
     if (window.cttv.dev) {
         window.cttv.changeMenu = changeMenu;
-        changeMenu(1);
+        changeMenu(4);
         window.cttv.devRemove = () => {
             cttvRoot.remove();
             style.remove();
