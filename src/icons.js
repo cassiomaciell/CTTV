@@ -216,3 +216,8 @@ const icons = {
         ],
     },
 };
+
+module.exports = {
+    emotes,
+    icons
+}

@@ -1,5 +1,5 @@
 window.cttv = window.cttv || {};
-
+window.cttv.state = null;
 /*<STATE>*/
 
 const LOGGER = {
@@ -17,15 +17,27 @@ const LOGGER = {
     },
 };
 
-const icons = {};
+let icons = {};
+window.cttv.startCTTVTask = startCTTVTask;
 
 if (window.cttv.dev) {
+    /*<ICONS>*/
     if (window.cttv.devRemove) window.cttv.devRemove();
     if (window.cttvTask) {
         clearInterval(window.cttv.task);
         window.cttv.task = null;
     }
     startCTTVTask();
+} else {
+    fetch("https://raw.githubusercontent.com/cassiomaciell/CTTV/master/assets/icons.json")
+        .then((res) => res.json())
+        .then((j) => {
+            icons = j;
+        })
+        .catch((err) => {
+            window.cttv.state = "ICONSERROR";
+            console.error(err);
+        });
 }
 
 function find(obj, key) {
@@ -58,7 +70,11 @@ function setChatMessage(text) {
     }
 }
 
-function buildSimpleChatMsgButton(name, slots, icon, text) {
+
+/*
+    @TODO msgs from JSON 
+*/
+function buildSimpleChatMsgButton(name, slots, text) {
     const btnOnClick = (e) => {
         setChatMessage(getChatMessage() + text);
         getChat().focus();
@@ -67,7 +83,7 @@ function buildSimpleChatMsgButton(name, slots, icon, text) {
             if (chatSendButton) chatSendButton.click();
         }
     };
-    return buildButton(name, slots, icon, btnOnClick);
+    return buildButton(name, slots, btnOnClick);
 }
 
 /**
@@ -89,19 +105,17 @@ function buildMenu(id, childNodes, visible = false) {
     return cttvMenu;
 }
 
-function buildButton(name, slots, icon, onClick) {
+function buildButton(name, slots, onClick) {
     const btn = document.createElement("div");
-
     btn.id = "cttv-btn-" + name;
     btn.classList.add("cttv-btn");
-
-    for (const render of icon.renders) {
+    for (const render of find(icons[name], "renders")) {
         if (render.type == "img") {
             const imgElem = document.createElement("img");
-            imgElem.src = render.img;
+            imgElem.src = find(render, "img");
             btn.appendChild(imgElem);
         } else if (render.type == "imgs") {
-            for (const img of render.imgs) {
+            for (const img of find(render, "imgs")) {
                 const imgElem = document.createElement("img");
                 imgElem.src = img;
                 btn.appendChild(imgElem);
@@ -114,7 +128,7 @@ function buildButton(name, slots, icon, onClick) {
             btnIconSvg.setAttribute("y", "0px");
             btnIconSvg.setAttribute("viewBox", "0 0 24 24");
 
-            for (const path of render.pathlist) {
+            for (const path of find(render, "pathlist")) {
                 const btnPath = document.createElementNS("http://www.w3.org/2000/svg", "path");
                 if (path.fill) btnPath.setAttribute("fill", path.fill);
                 if (path.d) btnPath.setAttribute("d", path.d);
@@ -161,7 +175,7 @@ function init() {
         getChat().focus();
     };
 
-    menu1ChildNodes.push(buildButton("blank", 1, icons.blank, blankOnClick));
+    menu1ChildNodes.push(buildButton("blank", 1, blankOnClick));
 
     /**
      * I ENJOYED MY STAY xqcL BTN
@@ -181,7 +195,7 @@ function init() {
             setChatMessage(text);
             getChat().focus();
         };
-        menu1ChildNodes.push(buildButton("xqcl", 1, icons.xqcl, xqcLOnClick));
+        menu1ChildNodes.push(buildButton("xqcl", 1, xqcLOnClick));
     })();
 
     /**
@@ -210,7 +224,7 @@ function init() {
             setChatMessage(msg);
             blankCharInLast = !blankCharInLast;
         };
-        menu1ChildNodes.push(buildButton("pepegachat", 1, icons.pepegachat, pepegachatOnClick));
+        menu1ChildNodes.push(buildButton("pepegachat", 1, pepegachatOnClick));
     })();
 
     /**
@@ -223,22 +237,22 @@ function init() {
 
     let menuTeaTimeChildNodes = [];
 
-    menuTeaTimeChildNodes.push(buildSimpleChatMsgButton("tfteatime", 2, icons.tfteatime, ":tf: TeaTime "));
-    menuTeaTimeChildNodes.push(buildSimpleChatMsgButton("pepelaughteatime", 2, icons.pepelaughteatime, "PepeLaugh TeaTime "));
+    menuTeaTimeChildNodes.push(buildSimpleChatMsgButton("tfteatime", 2, ":tf: TeaTime "));
+    menuTeaTimeChildNodes.push(buildSimpleChatMsgButton("pepelaughteatime", 2, "PepeLaugh TeaTime "));
 
     /**
      * Clap
      */
 
     let menuClapChildNodes = [];
-    menuClapChildNodes.push(buildSimpleChatMsgButton("ayayaclap", 2, icons.ayayaclap, "AYAYA Clap "));
-    menuClapChildNodes.push(buildSimpleChatMsgButton("tfclap", 2, icons.tfclap, ":tf: Clap "));
-    menuClapChildNodes.push(buildSimpleChatMsgButton("wickedclap", 2, icons.wickedclap, "WICKED Clap "));
-    menuClapChildNodes.push(buildSimpleChatMsgButton("ezclap", 2, icons.ezclap, "EZ Clap "));
-    menuClapChildNodes.push(buildSimpleChatMsgButton("feelsstrongmanclap", 2, icons.feelsstrongmanclap, "FeelsStrongMan Clap "));
-    menuClapChildNodes.push(buildSimpleChatMsgButton("omegalulclap", 2, icons.omegalulclap, "OMEGALUL Clap "));
-    menuClapChildNodes.push(buildSimpleChatMsgButton("feelsgoodmanclap", 2, icons.feelsgoodmanclap, "FeelsGoodMan Clap "));
-    menuClapChildNodes.push(buildSimpleChatMsgButton("forsencdclap", 2, icons.forsencdclap, "forsenCD Clap "));
+    menuClapChildNodes.push(buildSimpleChatMsgButton("ayayaclap", 2, "AYAYA Clap "));
+    menuClapChildNodes.push(buildSimpleChatMsgButton("tfclap", 2, ":tf: Clap "));
+    menuClapChildNodes.push(buildSimpleChatMsgButton("wickedclap", 2, "WICKED Clap "));
+    menuClapChildNodes.push(buildSimpleChatMsgButton("ezclap", 2, "EZ Clap "));
+    menuClapChildNodes.push(buildSimpleChatMsgButton("feelsstrongmanclap", 2, "FeelsStrongMan Clap "));
+    menuClapChildNodes.push(buildSimpleChatMsgButton("omegalulclap", 2, "OMEGALUL Clap "));
+    menuClapChildNodes.push(buildSimpleChatMsgButton("feelsgoodmanclap", 2, "FeelsGoodMan Clap "));
+    menuClapChildNodes.push(buildSimpleChatMsgButton("forsencdclap", 2, "forsenCD Clap "));
 
     /**
      * Misc
@@ -246,13 +260,13 @@ function init() {
 
     let menuMiscChildNodes = [];
 
-    menuMiscChildNodes.push(buildSimpleChatMsgButton("xqctechnoppoverheat ", 2, icons.xqctechnoppoverheat, "xqcTechno ppOverheat "));
-    menuMiscChildNodes.push(buildSimpleChatMsgButton("tfpinching", 2, icons.tfpinching, ":tf: 🤏 "));
-    menuMiscChildNodes.push(buildSimpleChatMsgButton("pistolayaya", 2, icons.pistolayaya, "🔫 AYAYA "));
-    menuMiscChildNodes.push(buildSimpleChatMsgButton("monkawnymncorn", 2, icons.monkawnymncorn, "monkaW nymnCorn "));
-    menuMiscChildNodes.push(buildSimpleChatMsgButton("forsencdnice", 2, icons.forsencdnice, "forsenCD nice "));
-    menuMiscChildNodes.push(buildSimpleChatMsgButton("forsencdvictory", 2, icons.forsencdvictory, "forsenCD ✌️ "));
-    menuMiscChildNodes.push(buildSimpleChatMsgButton("nampistolayaya", 3, icons.nampistolayaya, "NaM 🔫 AYAYA "));
+    menuMiscChildNodes.push(buildSimpleChatMsgButton("xqctechnoppoverheat", 2, "xqcTechno ppOverheat "));
+    menuMiscChildNodes.push(buildSimpleChatMsgButton("tfpinching", 2, ":tf: 🤏 "));
+    menuMiscChildNodes.push(buildSimpleChatMsgButton("pistolayaya", 2, "🔫 AYAYA "));
+    menuMiscChildNodes.push(buildSimpleChatMsgButton("monkawnymncorn", 2, "monkaW nymnCorn "));
+    menuMiscChildNodes.push(buildSimpleChatMsgButton("forsencdnice", 2, "forsenCD nice "));
+    menuMiscChildNodes.push(buildSimpleChatMsgButton("forsencdvictory", 2, "forsenCD ✌️ "));
+    menuMiscChildNodes.push(buildSimpleChatMsgButton("nampistolayaya", 3, "NaM 🔫 AYAYA "));
 
     /**
      * Add CTTV Root
@@ -311,7 +325,7 @@ function init() {
         changeMenu(newMenu);
     };
 
-    const btnUp = buildButton("up", 1, icons.upbtn, upBtnOnClick);
+    const btnUp = buildButton("upbtn", 1, upBtnOnClick);
     menuController.appendChild(btnUp);
 
     /**
@@ -323,7 +337,7 @@ function init() {
         changeMenu(newMenu);
     };
 
-    const downBtn = buildButton("down", 1, icons.downbtn, downBtnOnClick);
+    const downBtn = buildButton("downbtn", 1, downBtnOnClick);
     menuController.appendChild(downBtn);
 
     cttvRoot.appendChild(menuController);
@@ -344,14 +358,22 @@ function init() {
 }
 
 function tryInit() {
-    const hasRoot = !!document.querySelector("#cttv-root");
-    const chatInputExists = !!document.querySelector('[data-a-target="chat-input"]');
-    const chatButtonIsDisabled = !!document.querySelector('[data-a-target="chat-send-button"][disabled]');
-    const canAdd = chatInputExists && !hasRoot && !chatButtonIsDisabled;
+    if (window.cttv.state == "ICONSERROR") {
+        if (window.cttv.devRemove) cttv.devRemove();
+        if (window.cttv.task) clearInterval(cttv.task);
+        return false;
+    }
+    if (Object.keys(icons).length > 0) {
+        const hasRoot = !!document.querySelector("#cttv-root");
+        const chatInputExists = !!document.querySelector('[data-a-target="chat-input"]');
+        const chatButtonIsDisabled = !!document.querySelector('[data-a-target="chat-send-button"][disabled]');
+        const canAdd = chatInputExists && !hasRoot && !chatButtonIsDisabled;
 
-    if (canAdd) init();
+        if (canAdd) init();
 
-    return canAdd;
+        return canAdd;
+    }
+    return false;
 }
 
 function startCTTVTask() {
