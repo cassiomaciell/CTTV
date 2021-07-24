@@ -13,7 +13,12 @@
 			}
 		]
 	},
-	"xqcl": { "renders": [{ "type": "img", "img": "https://i.imgur.com/g0jL1jy.png" }] },
+	"xqcl": {
+		"renders": [
+			{ "type": "img", "img": "https://i.imgur.com/g0jL1jy.png" },
+			{ "type": "text", "text": "I ENJOYED" }
+		]
+	},
 	"pepegachat": {
 		"renders": [{ "type": "img", "img": "https://cdn.betterttv.net/emote/5f2e77591ab9be446c4e8d9b/3x" }]
 	},

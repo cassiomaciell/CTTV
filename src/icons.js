@@ -31,6 +31,10 @@ const icons = {
                 type: "img",
                 img: "https://i.imgur.com/g0jL1jy.png",
             },
+            {
+                type: "text",
+                text: "I ENJOYED",
+            }
         ],
     },
     pepegachat: {
