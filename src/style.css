@@ -13,6 +13,7 @@
     display: flex;
     flex-direction: row;
     margin-left: auto;
+    z-index: 1;
 }
 
 .cttv-menu {
@@ -28,6 +29,10 @@
     display: none;
 }
 
+.cttv-menu * {
+    z-index: 1;
+}
+
 .cttv-menu[visible="false"] {
     display: none;
 }
@@ -37,7 +42,7 @@
     height: 3rem;
     display: flex;
     flex-direction: row;
-    justify-content: center;
+    justify-content: space-evenly;
     align-items: center;
     padding: 0.1rem;
     border-radius: var(--border-radius-medium);
@@ -54,26 +59,18 @@
     width: 2rem;
     height: 2rem;
     object-fit: contain;
-    animation-play-state: paused !important;
 }
 
 .cttv-btn.cttv-btn-x2 {
     width: 6rem;
 }
 
-.cttv-btn.cttv-btn-x2 img,
-.cttv-btn.cttv-btn-x2 .cttv-icon-text,
-.cttv-btn.cttv-btn-x2 svg {
-    width: 4rem;
-}
-
 .cttv-btn.cttv-btn-x3 {
     width: 8rem;
 }
 
-.cttv-btn.cttv-btn-x3 img,
-.cttv-btn.cttv-btn-x3 svg {
-    width: 8rem;
+.cttv-btn.cttv-btn-x3 .cttv-icon-text {
+    width: 4rem;
 }
 
 .cttv-icon-text {
@@ -86,5 +83,9 @@
 }
 
 .cttv-icon-text-4 {
-    font-size: 90%;
+    font-size: 80%;
+}
+
+.cttv-icon-text-9 {
+    font-size: 60%;
 }

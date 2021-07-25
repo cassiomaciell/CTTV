@@ -1,5 +1,5 @@
-window.cttv = window.cttv || {};
-window.cttv.state = null;
+window.cttv = window.cttv || { state: {} };
+window.cttv.pluginstate = null;
 /*<STATE>*/
 
 const LOGGER = {
@@ -18,10 +18,13 @@ const LOGGER = {
 };
 
 let icons = {};
+let menus = {};
+
 window.cttv.startCTTVTask = startCTTVTask;
 
 if (window.cttv.dev) {
     /*<ICONS>*/
+    /*<MENUS>*/
     if (window.cttv.devRemove) window.cttv.devRemove();
     if (window.cttvTask) {
         clearInterval(window.cttv.task);
@@ -35,13 +38,37 @@ if (window.cttv.dev) {
             icons = j;
         })
         .catch((err) => {
-            window.cttv.state = "ICONSERROR";
+            window.cttv.pluginstate = "ICONSERROR";
+            console.error(err);
+        });
+    fetch("https://raw.githubusercontent.com/cassiomaciell/CTTV/master/assets/menus.json")
+        .then((res) => res.json())
+        .then((j) => {
+            menus = j;
+        })
+        .catch((err) => {
+            window.cttv.pluginstate = "MENUSSERROR";
             console.error(err);
         });
 }
 
 function find(obj, key) {
     return obj[Object.keys(obj).filter((e) => e.startsWith(key))];
+}
+
+function getState(obj, key) {
+    if (Object.hasOwnProperty.call(window.cttv.state, obj) && Object.hasOwnProperty.call(window.cttv.state[obj], key)) {
+        return window.cttv.state[obj][key];
+    }
+    return null;
+}
+function setState(obj, key, value) {
+    if (getState(obj, key) != null) {
+        window.cttv.state[obj][key] = value;
+    } else {
+        window.cttv.state[obj] = {};
+        window.cttv.state[obj][key] = value;
+    }
 }
 
 const getChat = () => document.querySelector('[data-a-target="chat-input"]');
@@ -69,7 +96,6 @@ function setChatMessage(text) {
         });
     }
 }
-
 
 /*
     @TODO msgs from JSON 
@@ -144,14 +170,15 @@ function buildButton(name, slots, onClick) {
         }
     }
 
-    if (slots) btn.classList.add("cttv-btn-x" + slots);
+    btn.classList.add("cttv-btn-x" + slots);
 
-    btn.addEventListener("click", onClick);
+    if (onClick) btn.addEventListener("click", onClick);
 
     return btn;
 }
 
 function init() {
+    console.time("[CTTV] Init time");
     if (window.cttv.dev) {
         LOGGER.info("init");
     }
@@ -163,113 +190,7 @@ function init() {
     document.body.appendChild(style);
 
     /**
-     * Menu 1
-     */
-    let menu1ChildNodes = [];
-
-    /**
-     * Blank char BTN
-     */
-    const blankOnClick = () => {
-        setChatMessage(getChatMessage() + String.fromCharCode("0x2800"));
-        getChat().focus();
-    };
-
-    menu1ChildNodes.push(buildButton("blank", 1, blankOnClick));
-
-    /**
-     * I ENJOYED MY STAY xqcL BTN
-     */
-    (() => {
-        let t = 8;
-        const xqcLOnClick = (e) => {
-            let text = "";
-            if (e.shiftKey) {
-                for (let i = 0; i < t; i++) {
-                    text += "I ENJOYED MY STAY xqcL ";
-                }
-                t == 8 ? (t = 7) : (t = 8);
-            } else {
-                text = getChatMessage() + "I ENJOYED MY STAY xqcL ";
-            }
-            setChatMessage(text);
-            getChat().focus();
-        };
-        menu1ChildNodes.push(buildButton("xqcl", 1, xqcLOnClick));
-    })();
-
-    /**
-     * PepegaChat
-     */
-
-    (() => {
-        let msg = "";
-        let blankCharInLast = false;
-        let lastMsg = 0;
-        const pepegachatOnClick = (e) => {
-            if (
-                !e.shiftKey ||
-                Date.now() - lastMsg < 1000 ||
-                getChatMessage().length < 1 ||
-                getChatMessage().split(String.fromCharCode("0x2800")).join("").trim().length < 1
-            )
-                return;
-            if (msg != getChatMessage()) {
-                msg = getChatMessage();
-            }
-            const msgToSend = msg + (msg.endsWith(" ") ? "" : " ") + (blankCharInLast ? "" : String.fromCharCode("0x2800"));
-            setChatMessage(msgToSend);
-            document.querySelector('[data-a-target="chat-send-button"]').click();
-            lastMsg = Date.now();
-            setChatMessage(msg);
-            blankCharInLast = !blankCharInLast;
-        };
-        menu1ChildNodes.push(buildButton("pepegachat", 1, pepegachatOnClick));
-    })();
-
-    /**
-     * Menu 2
-     */
-
-    /**
-     * TeaTime
-     */
-
-    let menuTeaTimeChildNodes = [];
-
-    menuTeaTimeChildNodes.push(buildSimpleChatMsgButton("tfteatime", 2, ":tf: TeaTime "));
-    menuTeaTimeChildNodes.push(buildSimpleChatMsgButton("pepelaughteatime", 2, "PepeLaugh TeaTime "));
-
-    /**
-     * Clap
-     */
-
-    let menuClapChildNodes = [];
-    menuClapChildNodes.push(buildSimpleChatMsgButton("ayayaclap", 2, "AYAYA Clap "));
-    menuClapChildNodes.push(buildSimpleChatMsgButton("tfclap", 2, ":tf: Clap "));
-    menuClapChildNodes.push(buildSimpleChatMsgButton("wickedclap", 2, "WICKED Clap "));
-    menuClapChildNodes.push(buildSimpleChatMsgButton("ezclap", 2, "EZ Clap "));
-    menuClapChildNodes.push(buildSimpleChatMsgButton("feelsstrongmanclap", 2, "FeelsStrongMan Clap "));
-    menuClapChildNodes.push(buildSimpleChatMsgButton("omegalulclap", 2, "OMEGALUL Clap "));
-    menuClapChildNodes.push(buildSimpleChatMsgButton("feelsgoodmanclap", 2, "FeelsGoodMan Clap "));
-    menuClapChildNodes.push(buildSimpleChatMsgButton("forsencdclap", 2, "forsenCD Clap "));
-
-    /**
-     * Misc
-     */
-
-    let menuMiscChildNodes = [];
-
-    menuMiscChildNodes.push(buildSimpleChatMsgButton("xqctechnoppoverheat", 2, "xqcTechno ppOverheat "));
-    menuMiscChildNodes.push(buildSimpleChatMsgButton("tfpinching", 2, ":tf: 🤏 "));
-    menuMiscChildNodes.push(buildSimpleChatMsgButton("pistolayaya", 2, "🔫 AYAYA "));
-    menuMiscChildNodes.push(buildSimpleChatMsgButton("monkawnymncorn", 2, "monkaW nymnCorn "));
-    menuMiscChildNodes.push(buildSimpleChatMsgButton("forsencdnice", 2, "forsenCD nice "));
-    menuMiscChildNodes.push(buildSimpleChatMsgButton("forsencdvictory", 2, "forsenCD ✌️ "));
-    menuMiscChildNodes.push(buildSimpleChatMsgButton("nampistolayaya", 3, "NaM 🔫 AYAYA "));
-
-    /**
-     * Add CTTV Root
+     * CTTV Root
      */
 
     const cttvRoot = document.createElement("div");
@@ -284,17 +205,77 @@ function init() {
     cttvMenus.setAttribute("current-menu", "1");
 
     /**
-     * Add CTTV Menus
+     * Create Menus
      */
-    const cttvMenu1 = buildMenu("1", menu1ChildNodes, true);
-    const cttvMenu2 = buildMenu("2", menuTeaTimeChildNodes, false);
-    const cttvMenu3 = buildMenu("3", menuClapChildNodes, false);
-    const cttvMenu4 = buildMenu("4", menuMiscChildNodes, false);
+    let menuID = 1;
+    for (const menuName of Object.keys(menus)) {
+        const menuItems = [];
+        for (const item of menus[menuName]) {
+            switch (item.type) {
+                case "SETSEND":
+                    menuItems.push(buildSimpleChatMsgButton(item.name, find(item, "slots"), item.text));
+                    break;
+                case "ADD":
+                    menuItems.push(
+                        buildButton(item.name, find(item, "slots"), () => {
+                            setChatMessage(getChatMessage() + item.text);
+                            getChat().focus();
+                        })
+                    );
+                    break;
+                case "ADDORSET":
+                    window.cttv.state[item.name] = item.max;
+                    menuItems.push(
+                        buildButton(item.name, find(item, "slots"), (e) => {
+                            let text = "";
+                            if (e.shiftKey) {
+                                const t = window.cttv.state[item.name];
+                                for (let i = 0; i < t; i++) {
+                                    text += item.text + " ";
+                                }
+                                t == item.max ? (window.cttv.state[item.name] = item.min) : (window.cttv.state[item.name] = item.max);
+                            } else {
+                                text = getChatMessage() + item.text + " ";
+                            }
+                            setChatMessage(text);
+                            getChat().focus();
+                        })
+                    );
+                    break;
+                case "SPECIAL00":
+                    window.cttv.state[item.name] = {
+                        lastMsg: 0,
+                        msg: "",
+                        blankCharInLast: false,
+                    };
+                    menuItems.push(
+                        buildButton(item.name, find(item, "slots"), (e) => {
+                            if (!e.shiftKey) return;
+                            if (Date.now() - getState(item.name, "lastMsg") < 1000) return;
+                            if (getChatMessage().length < 1) return;
+                            if (getChatMessage().split(String.fromCharCode("0x2800")).join("").trim().length < 1) return;
 
-    cttvMenus.appendChild(cttvMenu1);
-    cttvMenus.appendChild(cttvMenu2);
-    cttvMenus.appendChild(cttvMenu3);
-    cttvMenus.appendChild(cttvMenu4);
+                            const currentMsg = getState(item.name, "msg") || getChatMessage();
+
+                            if (currentMsg != getChatMessage()) setState(item.name, "msg", getChatMessage());
+
+                            const msgToSend =
+                                currentMsg + (currentMsg.endsWith(" ") ? "" : " ") + (getState(item.name, "blankCharInLast") ? "" : String.fromCharCode("0x2800"));
+
+                            setChatMessage(msgToSend);
+                            document.querySelector('[data-a-target="chat-send-button"]').click();
+                            setState(item.name, "lastMsg", Date.now());
+                            setChatMessage(currentMsg);
+                            setState(item.name, "blankCharInLast", !getState(item.name, "blankCharInLast"));
+                        })
+                    );
+                    break;
+                default:
+                    break;
+            }
+        }
+        cttvMenus.appendChild(buildMenu(menuID++, menuItems, !cttvMenus.childElementCount));
+    }
 
     cttvRoot.appendChild(cttvMenus);
 
@@ -305,39 +286,37 @@ function init() {
 
     //Controllers
 
-    function changeMenu(newMenu) {
+    function changeMenu(menuID) {
         const currentMenu = Number(cttvMenus.getAttribute("current-menu"));
-        const newMenuElem = document.querySelector(`[menu="${newMenu}"]`);
+        const newMenuElem = document.querySelector(`[menu="${menuID}"]`);
         if (newMenuElem) {
             const currentMenuElem = document.querySelector(`[menu="${currentMenu}"]`);
             currentMenuElem.setAttribute("visible", false);
             newMenuElem.setAttribute("visible", true);
-            cttvMenus.setAttribute("current-menu", newMenu);
+            cttvMenus.setAttribute("current-menu", menuID);
         }
     }
 
-    /**
-     * btnUp
-     */
-    const upBtnOnClick = () => {
-        const currentMenu = Number(cttvMenus.getAttribute("current-menu"));
-        const newMenu = currentMenu - 1;
-        changeMenu(newMenu);
-    };
-
-    const btnUp = buildButton("upbtn", 1, upBtnOnClick);
+    const btnUp = buildButton("upbtn", 1, (e) => updateMenu(e, -1));
     menuController.appendChild(btnUp);
 
-    /**
-     * downBtn
-     */
-    const downBtnOnClick = () => {
+    let lastMenuUpdateReq = 0;
+    const updateMenu = (e, m) => {
         const currentMenu = Number(cttvMenus.getAttribute("current-menu"));
-        const newMenu = currentMenu + 1;
+
+        const dbClick = Date.now() - lastMenuUpdateReq < 200;
+        let newMenu = e.shiftKey || dbClick ? (m < 0 ? 1 : cttvMenus.childElementCount) : currentMenu + m;
+
+        if (newMenu > cttvMenus.childElementCount) newMenu = 1;
+        if (newMenu <= 0) newMenu = cttvMenus.childElementCount;
+
+        if (currentMenu == newMenu) return;
+
         changeMenu(newMenu);
+        lastMenuUpdateReq = Date.now();
     };
 
-    const downBtn = buildButton("downbtn", 1, downBtnOnClick);
+    const downBtn = buildButton("downbtn", 1, (e) => updateMenu(e, 1));
     menuController.appendChild(downBtn);
 
     cttvRoot.appendChild(menuController);
@@ -349,16 +328,18 @@ function init() {
      */
     if (window.cttv.dev) {
         window.cttv.changeMenu = changeMenu;
-        changeMenu(4);
+        changeMenu(1);
         window.cttv.devRemove = () => {
             cttvRoot.remove();
             style.remove();
         };
     }
+
+    console.timeEnd("[CTTV] Init time");
 }
 
 function tryInit() {
-    if (window.cttv.state == "ICONSERROR") {
+    if (window.cttv.pluginstate == "ICONSERROR" || window.cttv.pluginstate == "MENUSSERROR") {
         if (window.cttv.devRemove) cttv.devRemove();
         if (window.cttv.task) clearInterval(cttv.task);
         return false;
