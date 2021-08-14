@@ -254,19 +254,19 @@ function init() {
                             if (Date.now() - getState(item.name, "lastMsg") < 1000) return;
                             if (getChatMessage().length < 1) return;
                             if (getChatMessage().split(String.fromCharCode("0x2800")).join("").trim().length < 1) return;
-
+                            const addBlank = !!getState(item.name, "blankCharInLast");
                             const currentMsg = getState(item.name, "msg") || getChatMessage();
 
                             if (currentMsg != getChatMessage()) setState(item.name, "msg", getChatMessage());
 
                             const msgToSend =
-                                currentMsg + (currentMsg.endsWith(" ") ? "" : " ") + (getState(item.name, "blankCharInLast") ? "" : String.fromCharCode("0x2800"));
+                                currentMsg + (currentMsg.endsWith(" ") ? "" : " ") + (addBlank ? "" : String.fromCharCode("0x2800"));
 
                             setChatMessage(msgToSend);
                             document.querySelector('[data-a-target="chat-send-button"]').click();
                             setState(item.name, "lastMsg", Date.now());
                             setChatMessage(currentMsg);
-                            setState(item.name, "blankCharInLast", !getState(item.name, "blankCharInLast"));
+                            setState(item.name, "blankCharInLast", !addBlank);
                         })
                     );
                     break;
